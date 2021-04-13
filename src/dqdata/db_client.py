@@ -74,4 +74,26 @@ class DbClient:
         :param overwrite: 是否覆盖已有相同日期值，默认False
         :return:
         '''
-        IndexUtil.save_items(serials, self.conn, overwrite=overwrite)
+        if serials is not None and len(serials) > 0:
+            IndexUtil.save_items(serials, self.conn, overwrite=overwrite)
+            for _id in set([item['idx'] for item in serials]): self.update_dict(_id)
+
+    def update_dict(self, _id):
+        '''
+        更新指标数据统计
+        '''
+        _dict = self.get_dict(_id)
+        if _dict is not None or _dict.get('table_name') is None:
+            sql_count = f'select count(id) as rows_count, min(index_date) as date_first, max(index_date) as date_last, max(update_time) as date_update from {_dict.get("table_name")} where index_id={_id}'
+            sql_update = f'update dict_index set rows_count=(:rows_count), date_first=(:date_first), date_last=(:date_last), time_last_update=(:time_last_update), time_last_request=(:time_last_request) where id=(:id)'
+            result = self.conn.execute(sql_count).fetchone()
+            if result is not None and len(result) == 4:
+                params = {
+                    'id': _id,
+                    'rows_count': result[0],
+                    'date_first': result[1],
+                    'date_last': result[2],
+                    'time_last_update': result[3],
+                    'time_last_request': dt.datetime.now()
+                }
+                self.conn.execute(sql_update, params)
