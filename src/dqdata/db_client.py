@@ -5,6 +5,7 @@ import pandas as pd
 import datetime as dt
 from .utils import DBUtil, IndexUtil
 
+
 class DbClient:
     '''
     指标数据库客户类
@@ -33,7 +34,7 @@ class DbClient:
             self.dicts[_id] = _dict = IndexUtil.get_dict(_id, self.conn)
         return _dict
 
-    def get_serials(self, ids, start_dt='2010-01-01', end_dt=dt.datetime.today().strftime('%Y-%m-%d')):
+    def get_series(self, ids, start_dt='2010-01-01', end_dt=dt.datetime.today().strftime('%Y-%m-%d')):
         '''
         获取日期序列
         :param ids: 指标id或id列表
@@ -42,10 +43,10 @@ class DbClient:
         :return:
         '''
         ids = list(set(ids)) if type(ids) == list else [ids]
-        # dfs = [self.__get_serial(id, start_dt, end_dt) for id in ids]
+        # dfs = [self.__get_series(id, start_dt, end_dt) for id in ids]
         df = None
         for _id in ids:
-            _df = self.__get_serial(_id, start_dt, end_dt)
+            _df = self.__get_series(_id, start_dt, end_dt)
             df = _df if df is None else pd.merge(df, _df, on='date', how='outer')
         if df is not None and len(df) > 0:
             df.sort_index(inplace=True)
@@ -54,7 +55,7 @@ class DbClient:
         df.sort_index(inplace=True)
         return df
 
-    def __get_serial(self, _id, start_dt, end_dt):
+    def __get_series(self, _id, start_dt, end_dt):
         _dict = self.get_dict(_id)
 
         if _dict is None or _dict.get('table_name') is None:
@@ -67,16 +68,22 @@ class DbClient:
 
         return df
 
-    def save_serials(self, serials, overwrite=False):
+    def save_series(self, series, overwrite=False):
         '''
         保存指标数据
-        :param serials: 指标序列数据列表，列表元素格式：{'idx': 100001, 'date': datetime.datetime.date(), 'value': 100.05 }
+        :param series: 指标序列数据列表，列表元素格式：{'idx': 100001, 'date': datetime.datetime.date(), 'value': 100.05 }
         :param overwrite: 是否覆盖已有相同日期值，默认False
         :return:
         '''
-        if serials is not None and len(serials) > 0:
-            IndexUtil.save_items(serials, self.conn, overwrite=overwrite)
-            for _id in set([item['idx'] for item in serials]): self.update_dict(_id)
+        if series is not None and len(series) > 0:
+            IndexUtil.save_items(series, self.conn, overwrite=overwrite)
+            for _id in set([item['idx'] for item in series]): self.update_dict(_id)
+
+    def delete_series(self, id):  # TODO
+        '''
+        清空指标数据
+        '''
+        pass
 
     def update_dict(self, _id):
         '''

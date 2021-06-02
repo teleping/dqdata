@@ -1,13 +1,58 @@
 #  -*- coding: utf-8 -*-
-# @date: 20201123
 # @author: zhangping
 
+import json
 import datetime as dt
+from urllib import request
+from urllib import parse
 from sqlalchemy import create_engine, Column, String
 from sqlalchemy.types import VARCHAR, Date, TIMESTAMP, Integer, Float, DECIMAL
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import Table, MetaData
+
+
+class HttpUtil:
+    @classmethod
+    def request_post(cls, url, params, headers={}, driver=None, raw=False):
+        if driver is not None and 'cookie' not in headers:
+            cookie = ''
+            for s in driver.get_cookies():
+                cookie = cookie + ('' if len(cookie) == 0 else '; ')
+                cookie = cookie + s['name'] + '=' + s['value']
+            headers['cookie'] = cookie
+        if driver is not None and 'user-agent' not in headers:
+            headers['user-agent'] = driver.execute_script("return navigator.userAgent")
+
+        if raw:
+            headers['Content-Type'] = 'application/json'
+            params = json.dumps(params).encode('utf-8')
+        elif params is not None:
+            params = parse.urlencode(params).encode('utf-8')
+
+        req = request.Request(url, headers=headers, data=params)  # POST
+        with request.urlopen(req) as result:
+            data = result.read()
+        return data
+
+    @classmethod
+    def request_down(cls, url, path, headers={}, params={}, driver=None):
+        if driver is not None and 'cookie' not in headers:
+            cookie = ''
+            for s in driver.get_cookies():
+                cookie = cookie + ('' if len(cookie) == 0 else '; ')
+                cookie = cookie + s['name'] + '=' + s['value']
+            headers['cookie'] = cookie
+        if driver is not None and 'user-agent' not in headers:
+            headers['user-agent'] = driver.execute_script("return navigator.userAgent")
+
+        params = parse.urlencode(params).encode('utf-8')
+        req = request.Request(url, headers=headers, data=params)  # POST
+        with request.urlopen(req) as f:
+            data = f.read()
+            fhandle = open(path, "wb")
+            fhandle.write(data)
+            fhandle.close()
 
 
 class DBUtil:
