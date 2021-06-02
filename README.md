@@ -37,8 +37,9 @@ api = ApiClient(token='xxxx-xxxx-xxxx')
 ### 方法说明：
 
 ```buildoutcfg
-def get_idx_dict(self, idx):
-param idx: 指标id
+get_idx_dict(idx)
+
+idx: 指标id
 ```
 
 ### 示例：通过id查询指标信息
