@@ -5,7 +5,7 @@ Data sdk for Ducheng Quant Database.
 ## 1、安装：
 
 ```
-pip install dqata
+pip install dqdata
 ```
 
 ```buildoutcfg
