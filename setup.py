@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="dqdata",
-    version="0.1.7",
+    version="0.1.9",
     author="teleping",
     author_email="teleping@163.com",
     description="Data sdk for DuCheng quant database.",
@@ -23,5 +23,5 @@ setuptools.setup(
     package_dir={"": "src"},
     packages=setuptools.find_packages(where="src"),
     python_requires=">=3.6",
-    install_requires=["logging", "json5", "numpy", "pandas", "urllib3", "sqlalchemy"],
+    install_requires=["numpy", "pandas", "urllib3", "sqlalchemy"],
 )

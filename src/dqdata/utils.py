@@ -14,16 +14,7 @@ from sqlalchemy import Table, MetaData
 
 class HttpUtil:
     @classmethod
-    def request_post(cls, url, params, headers={}, driver=None, raw=False):
-        if driver is not None and 'cookie' not in headers:
-            cookie = ''
-            for s in driver.get_cookies():
-                cookie = cookie + ('' if len(cookie) == 0 else '; ')
-                cookie = cookie + s['name'] + '=' + s['value']
-            headers['cookie'] = cookie
-        if driver is not None and 'user-agent' not in headers:
-            headers['user-agent'] = driver.execute_script("return navigator.userAgent")
-
+    def request_post(cls, url, params, headers={}, raw=False):
         if raw:
             headers['Content-Type'] = 'application/json'
             params = json.dumps(params).encode('utf-8')
@@ -36,16 +27,7 @@ class HttpUtil:
         return data
 
     @classmethod
-    def request_down(cls, url, path, headers={}, params={}, driver=None):
-        if driver is not None and 'cookie' not in headers:
-            cookie = ''
-            for s in driver.get_cookies():
-                cookie = cookie + ('' if len(cookie) == 0 else '; ')
-                cookie = cookie + s['name'] + '=' + s['value']
-            headers['cookie'] = cookie
-        if driver is not None and 'user-agent' not in headers:
-            headers['user-agent'] = driver.execute_script("return navigator.userAgent")
-
+    def request_down(cls, url, path, headers={}, params={}):
         params = parse.urlencode(params).encode('utf-8')
         req = request.Request(url, headers=headers, data=params)  # POST
         with request.urlopen(req) as f:
@@ -74,7 +56,6 @@ class DBUtil:
 
 
 class IndexUtil:
-
     @classmethod
     def get(cls, idx, date, value):
         return {'idx': idx, 'date': date, 'value': value}

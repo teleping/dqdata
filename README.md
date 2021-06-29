@@ -9,7 +9,7 @@ pip install dqdata
 ```
 
 ```buildoutcfg
-依赖包：logging, json5, numpy, pandas, urllib3, sqlalchemy
+依赖包：numpy, pandas, urllib3, sqlalchemy
 ```
 
 ## 2、ApiClient实例创建
@@ -55,7 +55,36 @@ print(info)
 {'id': 109646, 'code': 'RB_DC', 'name': '河钢承钢：天津市场价格：螺纹钢：HRB400E：Ф18-25mm（日）', 'unit': '元/吨', 'frequency': '日', 'description': None, 'tableName': 'T_STEEL', 'sourceType': 'mysteel', 'sourceCode': 'ST_0001246521', 'sourceDescription': None, 'industry': '黑色', 'type': '现货价格', 'commodity': 'RB', 'sjbId': None, 'userId': None, 'rowsCount': 1191, 'dateFirst': '2016-07-21T00:00:00', 'dateLast': '2021-04-28T00:00:00', 'timeLastUpdate': '2021-04-28T19:56:44.783', 'timeLastRequest': None, 'priority': None, 'status': None, 'shortName': None, 'updateDescription': None, 'indexPropertiesList': None, 'categoryId': None, 'indexName': None}
 ```
 
-## 4、查询指标数据
+## 4、通过类型查询指标列表
+
+### 方法说明：
+
+```buildoutcfg
+get_dict_list(source_type):
+
+source_type: 指标来源类型
+```
+
+### 示例：通过类型查询指标列表
+
+```
+df = api.get_dict_list('wind')
+print(df)
+```
+
+### 执行结果
+
+```
+          id    code       name  ... categoryIdList commodityName sorting
+0     102786  EXC_JY      美元中间价  ...           None          None    None
+1     102804  PTA_JY  FOB鹿特丹 MX  ...           None          None    None
+2     102805  PTA_JY    国产MX：华东  ...           None          None    None
+3     102818  PTA_JY  国产PX：镇海炼化  ...           None          None    None
+4     102835   PF_JY  TA01M.CZC  ...           None          None    None
+...      ...     ...        ...  ...            ...           ...     ...
+```
+
+## 5、查询指标数据
 
 ### 方法说明：
 
@@ -116,7 +145,7 @@ date
 2021-05-28                             5070.0                               5120.0
 ```
 
-## 5、插入指标数据
+## 6、插入指标数据
 
 ### 方法说明：
 
@@ -167,7 +196,7 @@ date
 2021-05-22     0.0     0.0
 ```
 
-## 6、删除指标数据
+## 7、删除指标数据
 
 ### 方法说明：
 
@@ -192,7 +221,7 @@ api.del_series([109645, 109646])
 2021-06-01 14:55:42,810 - api_client.py[line:131]- INFO: 删除了1191条数据。
 ```
 
-### 示例：删除指定日期数据
+### 示例：删除指定起始日期数据
 
 ```
 api.del_series([109645, 109646], start_dt='2021-04-15')

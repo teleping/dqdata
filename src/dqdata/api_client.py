@@ -28,7 +28,8 @@ class ApiClient():
             'api_query': '/updatemonitor/dict-index/exportData',  # query
             'api_import': '/updatemonitor/dict-index/importJson',  # insert
             'api_delete': '/updatemonitor/dict-index/deleteDictIndexData',  # delete
-            'api_dict': '/updatemonitor/dict-index/queryDictIndex'  # index dict
+            'api_dict': '/updatemonitor/dict-index/queryDictIndex',  # index dict
+            'api_dict_list': '/updatemonitor/dict-index/queryIndexList'  # index list
         }
         self.token = token
         self.host = 'http://' + host + ':' + str(port)
@@ -36,6 +37,7 @@ class ApiClient():
         self.api_import = self.host + api_urls['api_import']
         self.api_delete = self.host + api_urls['api_delete']
         self.api_dict = self.host + api_urls['api_dict']
+        self.api_dict_list = self.host + api_urls['api_dict_list']
         self.init_logger(log_level)
 
     def init_logger(self, log_level=logging.INFO):
@@ -66,6 +68,25 @@ class ApiClient():
             raise Exception(result['msg'])
         self.logger.info(result['msg'])
         return result['info']
+
+    def get_dict_list(self, source_type):
+        '''
+        根据类型获取指标列表
+        :param source_type: 指标来源类型
+        :return:
+        '''
+        source_type = '' if source_type is None else str(source_type)
+        url = self.api_dict_list + f'?sourceType={source_type}'
+        self.logger.debug('request: ' + url)
+        result = HttpUtil.request_post(url, None, headers={'token': self.token}, raw=False)
+        result = json.loads(result.decode('utf-8'))
+        self.logger.debug('result: ' + str(result))
+
+        if 'code' not in result or result['code'] != 200:
+            self.logger.error(result['msg'])
+            raise Exception(result['msg'])
+        self.logger.info(result['msg'])
+        return pd.DataFrame(result['info'])
 
     def get_series(self, ids, start_dt='2015-01-01', end_dt=None, column='id'):
         '''
