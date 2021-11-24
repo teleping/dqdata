@@ -234,3 +234,35 @@ api.del_series([109645, 109646], start_dt='2021-04-15')
 2021-06-01 14:59:28,585 - api_client.py[line:131]- INFO: 删除了15条数据。
 ```
 
+## 8、消息工具
+
+### 方法说明(短信)：
+
+```buildoutcfg
+send_sms(number, text, name='')
+
+number: 手机号码
+text: 消息文本
+name: 通知名称
+```
+
+### 示例：发送短消息
+
+```
+api.send_sms('139********', 'TableXXX数据更新完成', name='数据表更新')
+```
+
+### 方法说明(微信)：
+
+```buildoutcfg
+send_wx(email, text)
+
+email: 邮箱账号
+text: 消息文本
+```
+
+### 示例：发送微信消息
+
+```
+api.send_wx('zhangx@shxxxx.com.cn', 'TableXXX 数据更新完成')
+```

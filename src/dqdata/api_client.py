@@ -6,6 +6,7 @@ import logging
 import datetime as dt
 import numpy as np
 import pandas as pd
+from urllib import parse
 from .utils import HttpUtil
 
 
@@ -29,7 +30,9 @@ class ApiClient():
             'api_import': '/updatemonitor/dict-index/importJson',  # insert
             'api_delete': '/updatemonitor/dict-index/deleteDictIndexData',  # delete
             'api_dict': '/updatemonitor/dict-index/queryDictIndex',  # index dict
-            'api_dict_list': '/updatemonitor/dict-index/queryIndexList'  # index list
+            'api_dict_list': '/updatemonitor/dict-index/queryIndexList',  # index list
+            'api_msg_sms': '/sendAlert',  # send sms
+            'api_msg_wx': '/dcwechat/message/sendMessage'  # send weixin
         }
         self.token = token
         self.host = 'http://' + host + ':' + str(port)
@@ -38,6 +41,8 @@ class ApiClient():
         self.api_delete = self.host + api_urls['api_delete']
         self.api_dict = self.host + api_urls['api_dict']
         self.api_dict_list = self.host + api_urls['api_dict_list']
+        self.api_msg_sms = self.host + api_urls['api_msg_sms']
+        self.api_msg_wx = self.host + api_urls['api_msg_wx']
         self.init_logger(log_level)
 
     def init_logger(self, log_level=logging.INFO):
@@ -175,10 +180,33 @@ class ApiClient():
             result = HttpUtil.request_post(url, None, headers={'token': self.token}, raw=False)
             result = json.loads(result.decode('utf-8'))
             self.logger.debug('result: ' + str(result))
-
             if 'code' not in result or result['code'] != 200:
                 self.logger.error(result['msg'])
                 raise Exception(result['msg'])
             self.logger.info(result['msg'])
-
         return True
+
+    def send_sms(self, number, text, name=''):
+        '''
+        发送短信息
+        :param number: 手机号码
+        :param text: 消息文本
+        :param name: 通知名称
+        :return:
+        '''
+        params = {'phoneNum': number, 'msg': name, 'status': text}
+        url = self.api_msg_sms + '?' + str(parse.urlencode(params).encode('utf-8'), 'utf-8')
+        result = HttpUtil.request_post(url, None, headers={'token': self.token})
+        self.logger.info('result: ' + str(json.loads(result.decode('utf-8'))))
+
+    def send_wx(self, email, text):
+        '''
+        发送微信信息(企业微信)
+        :param email: 邮箱账号
+        :param text: 消息文本
+        :return:
+        '''
+        params = {'userName': email, 'msg': text}
+        url = self.api_msg_wx + '?' + str(parse.urlencode(params).encode('utf-8'), 'utf-8')
+        result = HttpUtil.request_post(url, None, headers={'token': self.token})
+        self.logger.info('result: ' + str(json.loads(result.decode('utf-8'))))

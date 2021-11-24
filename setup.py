@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="dqdata",
-    version="0.1.9",
+    version="0.2.01",
     author="teleping",
     author_email="teleping@163.com",
     description="Data sdk for DuCheng quant database.",
